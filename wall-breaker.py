@@ -2,6 +2,7 @@ from Tkinter import *
 import pygame
 import random
 import tkMessageBox
+import tkFont
 
 pygame.mixer.init()
 pygame.mixer.music.set_volume(0.5)
@@ -11,6 +12,64 @@ son1.set_volume(0.75)
 
 son2 = pygame.mixer.Sound("wrong.wav")
 son2.set_volume(0.15)
+
+def restart():
+	global PosX,PosY,PosX1,PosY1,Posx,Posy,Posx1,Posy1,erreur,bonu,x,y,X,xx,yx,x1,y1,x2,y2,score,score1,test,test1,item,item1,item2,item3,item4,item5,Pion,wall,plaba,start,Ball,Label1,placarre,Ball1
+	start.destroy()
+	PosX = 450
+	PosY = 480
+	PosX1 = 550
+	PosY1 = 490
+
+	Posx = 500
+	Posy = 250
+	Posx1 = 500
+	Posy1 = -50
+
+	erreur = 0
+	bonu = 3
+
+	x = 0
+	y = 1
+	X = 500
+
+	xx = 0
+	yx = 1
+
+	x1 = 100
+	y1 = 100
+	x2 = 150
+	y2 = 120
+
+	score = 0
+	score1 = 0
+
+	test = 0
+	test1 = 0
+
+
+	item = Canvas.create_image(1000,0,anchor=NE, image=photo)
+	item1 = Canvas.create_image(975,0,anchor=NE, image=photo)
+	item2 = Canvas.create_image(950,0,anchor=NE, image=photo)
+
+	item3 = Canvas.create_image(0,0,anchor=NW, image=photo3)
+	item4 = Canvas.create_image(25,0,anchor=NW, image=photo3)
+	item5 = Canvas.create_image(50,0,anchor=NW, image=photo3)
+
+	Pion = Canvas.create_rectangle(PosX,PosY,PosX1,PosY1,width=2,outline='black',fill='Salmon')
+	Ball = Canvas.create_oval(Posx-5,Posy-5,Posx+5,Posy+5,width=1,outline='black',fill='Wheat')
+	Ball1 = Canvas.create_oval(Posx1-5,Posy1-5,Posx1+5,Posy1+5,width=1,outline='black',fill='Wheat')
+
+	wall = Canvas.create_rectangle(x1,y1,x2,y2,fill='black')
+
+	ball()
+
+	placarre = Button(root, text ='Placer un carre', command = carre)
+	placarre.pack(side=LEFT,padx=5,pady=5)
+	plaba = Button(root, text ='ball', command = new)
+	plaba.pack(side=LEFT,padx=5,pady=5)
+	Label1 = Label(root, text = 'Score : %s'%score)
+	Label1.pack(side = TOP, padx = 0, pady = 0)
 
 def Drag(event):
 	""" Platform moving with mouse """
@@ -152,6 +211,7 @@ def ball1():
 
 		root.after(5,ball1)
 
+
 def points():
 	""" Add a point """
 	global score,x1,y1,x2,y2,wall,score1,Label1
@@ -252,54 +312,56 @@ def Heart():
 
 def Gameover():
 	""" Game Over message """
-	global test
+	global test,test1,item,item1,item2,item3,item4,item5,Pion,wall,Ball1,count,countdown
 	test = 1
+	count = 3
 	tkMessageBox.showwarning('CASSE BRIQUE','Score : '+str(score)+'\nScore(sans malus) : '+str(score1)+'\n\n!!!!!GAME OVER !!!!!')
-	root.destroy()
+	rep = tkMessageBox.askyesno('GAME OVER','Do you want to restart the game ?')
+	if rep == True:
+		Canvas.delete(Ball1)
+		placarre.destroy()
+		plaba.destroy()
+		Label1.destroy()
+		Canvas.delete(item)
+		Canvas.delete(item1)
+		Canvas.delete(item2)
+		Canvas.delete(item3)
+		Canvas.delete(item4)
+		Canvas.delete(item5)
+		Canvas.delete(Pion)
+		Canvas.delete(Ball)
+		Canvas.delete(wall)
+		countdown = Canvas.create_text(500,250,anchor=CENTER,text=' ',width=100)
+		Countdown()
+
+
+	else:
+		root.destroy()
+
+def Countdown():
+	global count,countdown
+	size = tkFont.Font(size=50)
+	Canvas.delete(countdown)
+	countdown = Canvas.create_text(500,250,anchor=CENTER,text=str(count),width=100,font=size)
+	count -= 1
+	if count != -1:
+		root.after(1000,Countdown)
+	else:
+		Canvas.delete(countdown)
+		restart()
 
 def new():
 	""" Add a ball """
-	global Ball1,plaba
+	global Ball1,plaba,Posy1
+	Posy1 = 250
 	plaba.destroy()
-	Ball1 = Canvas.create_oval(Posx1-5,Posy1-5,Posx1+5,Posy1+5,width=1,outline='black',fill='Wheat')
 	ball1()
 
 root = Tk()
 root.title('CASSE BRIQUE')
 
-PosX = 450
-PosY = 480
-PosX1 = 550
-PosY1 = 490
-
-Posx = 500
-Posy = 250
-Posx1 = 500
-Posy1 = 250
-
-erreur = 0
-bonu = 3
-
-x = 0
-y = 1
-X = 500
-
-xx = 0
-yx = 1
-
-x1 = 100
-y1 = 100
-x2 = 150
-y2 = 120
-
-score = 0
-score1 = 0
-
 Largeur = 1000
 Hauteur = 500
-
-test = 0
-test1 = 0
 
 Canvas = Canvas(root, width = Largeur, height =Hauteur,bg='Firebrick')
 
@@ -308,19 +370,6 @@ photo1 = PhotoImage (file="over1.gif")
 photo2 = PhotoImage (file="over.gif")
 photo3 = PhotoImage (file="bonus.gif")
 
-item = Canvas.create_image(1000,0,anchor=NE, image=photo)
-item1 = Canvas.create_image(975,0,anchor=NE, image=photo)
-item2 = Canvas.create_image(950,0,anchor=NE, image=photo)
-
-item3 = Canvas.create_image(0,0,anchor=NW, image=photo3)
-item4 = Canvas.create_image(25,0,anchor=NW, image=photo3)
-item5 = Canvas.create_image(50,0,anchor=NW, image=photo3)
-
-Pion = Canvas.create_rectangle(PosX,PosY,PosX1,PosY1,width=2,outline='black',fill='Salmon')
-Ball = Canvas.create_oval(Posx-5,Posy-5,Posx+5,Posy+5,width=1,outline='black',fill='Wheat')
-
-wall = Canvas.create_rectangle(x1,y1,x2,y2,fill='black')
-
 Canvas.focus_set()
 
 Canvas.bind('<Key>', Keyboard)
@@ -328,20 +377,11 @@ Canvas.bind('<B1-Motion>',Drag)
 Canvas.pack(padx =5, pady =5)
 
 
-h1 = Hauteur//2
-l1 = Largeur//2
-
-ball()
-print 'Score :',score
 
 
-Button(root, text ='Quitter', command = Gameover).pack(side=RIGHT,padx=5,pady=5)
-plaba = Button(root, text ='ba', command = new)
-Button(root, text ='Placer un carre', command = carre).pack(side=LEFT,padx=5,pady=5)
-plaba.pack(side=LEFT,padx=5,pady=5)
-Label1 = Label(root, text = 'Score : %s'%score)
-Label1.pack(side = TOP, padx = 0, pady = 0)
+
+Button(root, text ='Quitter', command = root.quit).pack(side=RIGHT,padx=5,pady=5)
+start = Button(root, text ='START', command = restart)
+start.pack(side=LEFT,padx=5,pady=5)
 
 root.mainloop()
-
-root.destroy()
